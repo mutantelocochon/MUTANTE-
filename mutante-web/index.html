@@ -66,18 +66,20 @@ h2.d { font-size: var(--st); }
 .hey { position: absolute; right: 0; bottom: 100%; margin-bottom: 22px; white-space: nowrap; }
 
 /* side index */
-.idx { position: fixed; left: 32px; top: calc(var(--vh) * .16); z-index: 45; display: flex; gap: 16px; color: #fff; mix-blend-mode: difference; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
+.idx { position: fixed; left: 32px; top: calc(var(--vh) * .16); z-index: 45; display: flex; gap: 16px; --ix: #fff; color: var(--ix); text-shadow: 0 0 8px rgba(0,0,0,.45); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
 .idx-t { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .idx-t .lb0 { writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; }
 .idx-t button { background: none; border: 0; color: inherit; font-size: 18px; line-height: 1; cursor: pointer; padding: 2px 4px; }
 .idx ul { list-style: none; margin: 0; padding: 0; position: relative; display: flex; flex-direction: column; gap: 30px; }
-.idx .line { position: absolute; left: 4px; top: 4px; bottom: 4px; width: 1px; background: rgba(255, 255, 255, .3); }
-.idx .fill { position: absolute; left: 0; top: 0; width: 1px; background: #fff; height: 0; }
+.idx .line { position: absolute; left: 4px; top: 4px; bottom: 4px; width: 1px; background: var(--ix); opacity: .3; }
+.idx .fill { position: absolute; left: 0; top: 0; width: 1px; background: var(--ix); height: 0; }
 .idx li button { display: flex; align-items: center; gap: 14px; background: none; border: 0; color: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; padding: 0; opacity: .5; transition: opacity .3s var(--ease); }
 .idx li button:hover, .idx li button[aria-current="true"] { opacity: 1; }
-.idx .dot { width: 9px; height: 9px; border: 1px solid #fff; border-radius: 50%; flex: none; transition: transform .3s var(--ease), background .3s; }
-.idx li button[aria-current="true"] .dot { background: #fff; transform: scale(1.35); }
+.idx .dot { width: 9px; height: 9px; border: 1px solid var(--ix); border-radius: 50%; flex: none; transition: transform .3s var(--ease), background .3s; }
+.idx li button[aria-current="true"] .dot { background: var(--ix); transform: scale(1.35); }
 .idx .tx b { font-weight: 500; margin-right: 8px; }
+html.t-light .idx { --ix: #0D0D0D; text-shadow: none; }
+html.t-light .idx.onhero { --ix: #fff; text-shadow: 0 0 8px rgba(0,0,0,.45); }
 .idx .tx { display: none; } .idx:hover .tx, .idx:focus-within .tx, .idx.open .tx { display: inline; }
 
 /* intro: always shown on load, always black */
@@ -358,6 +360,8 @@ html.t-light .slot img { filter: invert(1); }
 .svsw button[aria-pressed="true"] { background: #FF4A1C; border-color: #FF4A1C; color: #000; }
 .svsw button.x { border-color: transparent; color: #8A8A8A; padding: 7px 8px; }
 .svsw[hidden] { display: none; }
+/* while a video is open the page behind it is not drawn (lighter on old computers) */
+html.pl-on #stage { visibility: hidden; }
 </style>
 </head><body>
 
@@ -604,6 +608,7 @@ function onScroll() {
   rects.forEach(function (r, i) { if (r.top <= ref) act = i; });
   var r0 = rects[act], r1 = rects[act + 1], frac = r1 ? clamp((ref - r0.top) / (r1.top - r0.top)) : 1, idx = $('idx');
   if (idx) {
+    idx.classList.toggle('onhero', act === 0);
     idx.querySelectorAll('li button').forEach(function (b, i) { if (i === act) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
     $('idxf').style.height = ((idx.querySelector('ul').offsetHeight - 8) * clamp((act + frac) / (SECS.length - 1))) + 'px';
   }
@@ -705,7 +710,7 @@ function openPlayer(id) {
     '<div class="pl-r" id="plR" role="slider" tabindex="0" aria-label="' + esc(p.title) + '" aria-valuemin="0" aria-valuemax="' + p.dur + '" aria-valuenow="0"><i class="tk"></i><i class="fl"></i><i class="hd"></i><span class="tip" id="plTip">00:00</span></div>' +
     '<span class="pl-t" id="plD">' + mmss(p.dur) + '</span><button type="button" id="plMu" data-pl="mute"></button><button type="button" data-pl="full" aria-label="' + t('full') + '">' + I.full + '</button></div>' +
     '<div class="pl-msg" id="plMsg" hidden><span>' + t('noplay') + '</span><a href="https://vimeo.com/' + p.id + '" target="_blank" rel="noopener">' + t('onVimeo') + '</a></div>';
-  el.hidden = false; requestAnimationFrame(function () { el.classList.add('on'); });
+  el.hidden = false; document.documentElement.classList.add('pl-on'); requestAnimationFrame(function () { el.classList.add('on'); });
   document.documentElement.style.overflow = 'hidden';
   plUI(); plTime(0); plWake();
   function failed() { if (PL.loaded) return; el.classList.add('failed'); var m = $('plMsg'); if (m) m.hidden = false; }
@@ -727,7 +732,7 @@ function closePlayer() {
   var el = $('pl'); if (el.hidden) return;
   if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {});
   if (VP) { VP.destroy().catch(function () {}); VP = null; }
-  el.classList.remove('on'); clearTimeout(PL.idle);
+  el.classList.remove('on'); clearTimeout(PL.idle); document.documentElement.classList.remove('pl-on');
   setTimeout(function () { el.hidden = true; el.innerHTML = ''; el.className = 'vp'; }, 450);
   document.documentElement.style.overflow = '';
 }
