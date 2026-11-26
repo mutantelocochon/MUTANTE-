@@ -21,5 +21,6 @@ var PROJECTS = [
   { id: '717734637', client: '', title: 'ENSALADITAS', dur: 52 },
   { id: '1206295846', client: 'DIDI', title: 'LO BUENO ES QUE HAY DIDI', dur: 23 },
   { id: '518736282', client: 'KIA', title: 'ANTES TONY TRUE AND THE TIJUANA', dur: 187 },
-  { id: '777081107', client: 'DELL TECHNOLOGIES', title: 'ALCHEMICAL REACTION', dur: 84 }
-]; 
+  { id: '777081107', client: 'DELL TECHNOLOGIES', title: 'ALCHEMICAL REACTION', dur: 84 },
+  { id: '1118878660', client: '', title: 'LIQUIDS REEL' }
+];
