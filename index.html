@@ -15,7 +15,7 @@ html.t-light { --bg: #EEEEEC; --fg: #0D0D0D; --g1: #4F4E4B; --g2: #6B6964; --g3:
 body { margin: 0; background: var(--bg); color: var(--fg); font-family: 'Archivo', system-ui, sans-serif; overflow-x: hidden; transition: background .4s var(--ease); }
 :where(button) { font: inherit; }
 .stage { width: 100%; overflow-x: clip; }
-#pvscale { width: 1280px; }
+#pvscale { width: 1280px; margin: 0 auto; }
 
 #pv { position: relative; width: 1280px; background: var(--bg); color: var(--fg); font-family: 'Archivo', system-ui, sans-serif;
   --vh: 800px; --st: 56px; --sn: 48px; --hl: 160px; --wt: 148px; --tw: 76%; --ty: 84%; transition: background .4s var(--ease), color .4s var(--ease); }
@@ -66,7 +66,7 @@ h2.d { font-size: var(--st); }
 .hey { position: absolute; right: 0; bottom: 100%; margin-bottom: 22px; white-space: nowrap; }
 
 /* side index */
-.idx { position: fixed; left: 32px; top: calc(var(--vh) * .16); z-index: 45; display: flex; gap: 16px; --ix: #fff; color: var(--ix); text-shadow: 0 0 8px rgba(0,0,0,.45); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
+.idx { position: fixed; left: calc(var(--fx, 0px) + 32px); top: calc(var(--vh) * .16); z-index: 45; display: flex; gap: 16px; --ix: #fff; color: var(--ix); text-shadow: 0 0 8px rgba(0,0,0,.45); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
 .idx-t { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .idx-t .lb0 { writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; }
 .idx-t button { background: none; border: 0; color: inherit; font-size: 18px; line-height: 1; cursor: pointer; padding: 2px 4px; }
@@ -592,6 +592,7 @@ function scaleFrame() {
   MOB = w < 820; pv.classList.toggle('m', MOB);
   if (MOB) { K = 1; sc.style.zoom = 1; sc.style.width = '100%'; pv.style.width = '100%'; }
   else { K = Math.min(1.6, w / 1280); sc.style.zoom = K; sc.style.width = ''; pv.style.width = ''; }
+  pv.style.setProperty('--fx', MOB ? '0px' : (Math.max(0, (w - 1280 * K) / 2) / K).toFixed(1) + 'px');
   pv.style.setProperty('--vh', (window.innerHeight / K).toFixed(1) + 'px');
   var mf = MOB ? .5 : 1; [['st', 56], ['sn', 44], ['hl', 160], ['wt', 148]].forEach(function (a) { pv.style.setProperty('--' + a[0], Math.round(a[1] * mf) + 'px'); });
   fitHow();
